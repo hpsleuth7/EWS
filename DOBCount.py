@@ -249,6 +249,10 @@ def getViol():
 BBL for each entry. Return dataframe."""
 def getEcb():
  
+    ecbFrame=pandas.read_csv('DOB_ECB_Violations.csv',encoding='utf-8', low_memory=False,dtype={'ISSUE_DATE':object})
+    ecbFrame=ecbFrame.drop(ecbFrame[ecbFrame['BORO']!=3].index) #drop all non-Brooklyn
+    
+    """
     resp=[]
 
     for i in zips:
@@ -272,36 +276,35 @@ def getEcb():
         resp.append(response.content)
 
     ecbFrame = JSONtoDataFrame(resp)
+    """
+    
+    
+    
     BBLs=pandas.Series(-1,index=ecbFrame.index)
   
     # populate BBLs Series with BBL for each entry
-    for i in ecbFrame.index:
+    for i in range(len(ecbFrame.index)):
         temp=ecbFrame.iloc[i]
         
-        BBL = str(temp['boro'])
-        curr=str(temp['block'])
+        BBL = str(temp['BORO'])
+        curr=str(temp['BLOCK'])
         buff='0'*(5-len(curr))
         BBL = BBL+buff+curr
-        curr=str(temp['lot'])[-4:]
+        curr=str(temp['LOT'])[-4:]
         buff='0'*(4-len(curr))
         BBL=BBL+buff+curr
          
-        try:                  #convert to int64
-            BBL=np.int64(BBL)
-        except:
-            pass
 
-        BBLs[i]=BBL    #same BBL problem
+        BBLs.iloc[i]=BBL    #same BBL problem
 
     ecbFrame['BBL']=BBLs
 
     # fix date column and drop all before 2014
-    ecbFrame['issue_date']=parseDOBDates(ecbFrame['issue_date'])
-    ecbFrame=ecbFrame.drop(ecbFrame[ecbFrame['issue_date']==-1].index)
+    pdb.set_trace()
+    ecbFrame['ISSUE_DATE']=parseDOBDates(ecbFrame['ISSUE_DATE'])
     startDate=datetime.date(2014,1,1)
-    ecbFrame=ecbFrame.drop(ecbFrame[ecbFrame['issue_date']<startDate].index)
+    ecbFrame=ecbFrame.drop(ecbFrame[ecbFrame['ISSUE_DATE']<startDate].index)
     ecbFrame.to_csv("droppedECB.csv",encoding='utf-8')
-
 
     return ecbFrame
 

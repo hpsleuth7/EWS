@@ -40,7 +40,7 @@ def main():
     zips = [11207,11208,11212,11233]
 
     # list of columns for final table: modify this to change what columns are included and in what order
-    columns = ['BBL','BuildingID','HouseNumber','StreetName','ComplaintID','ReceivedDate','Apartment','Type','SpaceType',            
+    columns = ['BBL','BuildingID','Address','ComplaintID','ReceivedDate','Apartment','Type','SpaceType',            
             'MajorCategory','MinorCategory','Code','Status_x','StatusDate_x','UnitType',
             'StatusID_x','StatusDescription','Status_y','StatusDate_y']
     
@@ -58,16 +58,16 @@ def main():
 
     complaints = getComplaints(BBLs,zips)  # get table of HPD complaints from BBL properties
     
-    pdb.set_trace()
     problems = pandas.read_csv('Complaint_Problems.csv',encoding='utf-8')
     
     complaints['new_index']=complaints.index
     
     master = pandas.merge(complaints,problems,how='left',on='ComplaintID')
     
-    master.loc['ReceivedDate']=parseDOBDates(master['ReceivedDate'])
+    master['ReceivedDate']=parseDOBDates(master['ReceivedDate'])
     
-    master.set_index('new_index')
+    master=master.sort_values(['new_index','ReceivedDate'],ascending=[True,False])
+    master=master.set_index('new_index')
     
     master = arrange(master,columns)
 
@@ -93,8 +93,10 @@ def getComplaints(BBList, zipCodes):
     # begin to isolate ENY entries
     complaints=complaints.drop(complaints[complaints['BoroughID']!=3].index)
     complaints=complaints.drop(complaints[complaints['CommunityBoard']!=5].index)
-        
+
+	# Make BBL column and concatenate street address        
     BBLs=pandas.Series(-1,index=complaints.index)
+    address=pandas.Series(-1,index=complaints.index)
 
     for i in range(len(complaints.index)):
         temp=complaints.iloc[i]
@@ -108,6 +110,11 @@ def getComplaints(BBList, zipCodes):
         BBL=BBL+buff+curr
 
         BBLs.iloc[i]=BBL
+        
+        address.iloc[i]=str(temp['HouseNumber'])+" "+str(temp['StreetName'])
+
+
+    complaints['Address']=address  # add address column to dataframe
 
     complaints['BBL']=BBLs
     

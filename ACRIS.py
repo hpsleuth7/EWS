@@ -59,56 +59,17 @@ def main():
     # join master to legals
     #master = master.set_index("document_id")
     
-    result=legals.merge(master,left_on='document_id',right_on='DOCUMENT ID',how='inner')
+    legals=legals.merge(master,left_on='document_id',right_on='DOCUMENT ID',how='inner')
     
-    #legals.to_csv('outlegals.csv')
-    #legals=legals.join(master,on='document_id', how='inner')
-
-    # write out - ALL master entries should be in legals
-    #legals.to_csv(wPath)
-    #master.to_csv('outmaster.csv')
-
-    # drop all entries outside ENY, and add Lucy's BBL index
-    temp = [-1]*len(legals.index)
-    legals['new_index']=pandas.Series(temp,index=legals.index)
-    toDrop=[]
-
-    for i in legals.index:
-        curr=legals.loc[i,'BBL']
-        if curr in BBLs:
-            legals.loc[i,'new_index']=BBLs.index(curr)
-        else:
-            toDrop.append(i)
-    legals=legals.drop(toDrop)
-
-    legals.to_csv('outlegals.csv')
-    # get parties associated with doc id's
-    parties=getParties(legals['document_id'])
+    legals['DOC. DATE']=parseDOBDates(legals['DOC. DATE'])
     
-    # keep only names of parties and index on doc ids
-    print parties
-    parties=pandas.DataFrame({'name':parties['name'], 'document_id':parties['document_id']})
-    parties=parties.set_index('document_id')
+
+    #legals=legals.dropna(subset=['DOC. DATE'])
+    legals['new_index']=legals.index
+    #legals=legals.sort_values(['new_index','DOC. DATE'],ascending=[True,False])
     
-    # parties with legals
-    legals=legals.join(parties,on='document_id')
+    legals=legals.set_index('new_index')
 
-    legals=legals.sort_values(by='new_index')
-
-    print legals
-
-    pdb.set_trace()
-
-    dateFixer = Datefix(legals['document_date'])
-    pyDates=dateFixer.getDates()
-    legals['document_date']=pyDates
-
-    dateFixer.upload(legals['good_through_date'])
-    pyDates=dateFixer.getDates()
-    legals['good_through_date']=pyDates
-
-    dateFixer.upload(legals['recorded_datetime'])
-    legals['recorded_datetime']=dateFixer.getDates()
 
     
 
@@ -190,7 +151,6 @@ def getLegals():
 """
 def getMaster():
 
-    pdb.set_trace()
     master = pandas.read_csv("ACRIS_-_Real_Property_Master.csv", encoding='utf-8')
     
     return master
