@@ -39,20 +39,20 @@ dobecbURL = "https://data.cityofnewyork.us/resource/8vf4-ne9x.json"
 dobfileURL = "https://data.cityofnewyork.us/resource/rvhx-8trz.json"
 dobissueURL = "https://data.cityofnewyork.us/resource/83x8-shf7.json"
 
-binFile = "binmap.txt"
-streetsfile="streets.txt"
+binFile = "/Inputs/binmap.txt"
+streetsfile="/Inputs/streets.txt"
 
 # static reference:
 zips = [11207,11208,11212,11233]
 comboard = 305
 
 # file that contains list of BBLS. MUST BE IN SAME FOLDER AS HPDComplaints.py
-rPath = "BBLs.csv"
+rPath = "Inputs/BBLs.csv"
 
 # Name of output file
-wPath = "DOB_EWS.csv"
+wPath = "raw_data/DOB_EWS.csv"
 
-DOB_ECB_file="DOB_ECB_opendata.csv"
+DOB_ECB_file="raw_data/curled_data/DOB_ECB_opendata.csv"
 
 def main():
 

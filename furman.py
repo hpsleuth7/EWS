@@ -19,7 +19,8 @@ propinfo="http://nyufc.carto.com/api/v2/sql?format=csv&q=SELECT+*+FROM+property_
 subsidy="http://nyufc.carto.com/api/v2/sql?format=csv&q=SELECT+*+FROM+subsidy"
 subsidyBBL="http://nyufc.carto.com/api/v2/sql?format=csv&q=SELECT+*+FROM+subsidy_bbl_link"
 
-bblpath="BBLs.csv"
+bblpath="Inputs/BBLs.csv"
+coredata_file="raw_data/CoreData.csv"
 
 def main():
 
@@ -28,7 +29,7 @@ def main():
     BBLs = readFile(bblpath)
     master = dropSort(master,'bbl',BBLs)
     
-    master.to_csv("CoreData.csv",encoding='utf-8')
+    master.to_csv(coredata_file,encoding='utf-8')
     
     return
     

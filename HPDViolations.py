@@ -40,10 +40,10 @@ columns = ['BBL','inspectiondate','apartment','class','novdescription','currents
            'originalcorrectbydate','certifieddate','violationid']
     
 # file that contains list of BBLS. MUST BE IN SAME FOLDER AS HPDComplaints.py
-rPath = "BBLs.csv"
+rPath = "Inputs/BBLs.csv"
 
 # MODIFY THIS - name of output file
-wPath = "HPD_violations_EWS.csv"
+wPath = "raw_data/HPD_violations_EWS.csv"
 
 
 

@@ -30,8 +30,8 @@ import pdb
 complaintsURL = "https://data.cityofnewyork.us/resource/jspd-2hr7.json"
 problemsURL = "https://data.cityofnewyork.us/resource/gp4p-wib8.json"
 
-HPD_problems_file="HPD_com_problems_opendata.csv"
-HPD_complaints_file='HPD_com_complaints_opendata.csv'
+HPD_problems_file="raw_data/curled_data/HPD_com_problems_opendata.csv"
+HPD_complaints_file='raw_data/curled_data/HPD_com_complaints_opendata.csv'
 
 def main():
 
@@ -47,10 +47,10 @@ def main():
             'StatusID_x','StatusDescription','Status_y','StatusDate_y']
     
     # file that contains list of BBLS. MUST BE IN SAME FOLDER AS HPDComplaints.py
-    rPath = "BBLs.csv"
+    rPath = "Inputs/BBLs.csv"
 
     # name of output file
-    wPath = "HPD_omplaints_EWS.csv"
+    wPath = "raw_data/HPD_omplaints_EWS.csv"
 
     #############################################################################
 
