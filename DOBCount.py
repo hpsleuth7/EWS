@@ -50,7 +50,9 @@ comboard = 305
 rPath = "BBLs.csv"
 
 # Name of output file
-wPath = "DoBCounts.csv"
+wPath = "DOB_EWS.csv"
+
+DOB_ECB_file="DOB_ECB_opendata.csv"
 
 def main():
 
@@ -249,7 +251,7 @@ def getViol():
 BBL for each entry. Return dataframe."""
 def getEcb():
  
-    ecbFrame=pandas.read_csv('DOB_ECB_Violations.csv',encoding='utf-8', low_memory=False,dtype={'ISSUE_DATE':object})
+    ecbFrame=pandas.read_csv(DOB_ECB_file,encoding='utf-8', low_memory=False,dtype={'ISSUE_DATE':object})
     ecbFrame=ecbFrame.drop(ecbFrame[ecbFrame['BORO']!=3].index) #drop all non-Brooklyn
     
     """

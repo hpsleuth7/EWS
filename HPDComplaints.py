@@ -30,6 +30,8 @@ import pdb
 complaintsURL = "https://data.cityofnewyork.us/resource/jspd-2hr7.json"
 problemsURL = "https://data.cityofnewyork.us/resource/gp4p-wib8.json"
 
+HPD_problems_file="HPD_com_problems_opendata.csv"
+HPD_complaints_file='HPD_com_complaints_opendata.csv'
 
 def main():
 
@@ -48,7 +50,7 @@ def main():
     rPath = "BBLs.csv"
 
     # name of output file
-    wPath = "HPD_Complaints.csv"
+    wPath = "HPD_omplaints_EWS.csv"
 
     #############################################################################
 
@@ -58,7 +60,7 @@ def main():
 
     complaints = getComplaints(BBLs,zips)  # get table of HPD complaints from BBL properties
     
-    problems = pandas.read_csv('Complaint_Problems.csv',encoding='utf-8')
+    problems = pandas.read_csv(HPD_problems_file,encoding='utf-8')
     
     complaints['new_index']=complaints.index
     
@@ -88,7 +90,7 @@ def getComplaints(BBList, zipCodes):
 
     ### Request data ###
 
-    complaints = pandas.read_csv('Housing_Maintenance_Code_Complaints.csv',encoding='utf-8')
+    complaints = pandas.read_csv(HPD_complaints_file,encoding='utf-8')
     
     # begin to isolate ENY entries
     complaints=complaints.drop(complaints[complaints['BoroughID']!=3].index)

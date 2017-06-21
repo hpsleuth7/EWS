@@ -38,9 +38,10 @@ rplegalsURL="https://data.cityofnewyork.us/resource/8h5j-fqxa.json"
 streetsfile="streets.txt"
 
 rPath = "BBLs.csv"
+ACRISfile="ACRIS_-_Real_Property_Master.csv"
 
 # Name of output file
-wPath = "outACRIS.csv"
+wPath = "ACRIS_EWS.csv"
 
 def main():
 
@@ -151,7 +152,7 @@ def getLegals():
 """
 def getMaster():
 
-    master = pandas.read_csv("ACRIS_-_Real_Property_Master.csv", encoding='utf-8')
+    master = pandas.read_csv(ACRISfile, encoding='utf-8')
     
     return master
     

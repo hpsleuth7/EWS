@@ -31,25 +31,28 @@ complaintsURL = "https://data.cityofnewyork.us/resource/jspd-2hr7.json"
 problemsURL = "https://data.cityofnewyork.us/resource/gp4p-wib8.json"
 violationsURL = "https://data.cityofnewyork.us/resource/b2iz-pps8.json"
 
+# list of ENY zip codes
+zips = [11207,11208,11212,11233]
+
+# list of columns for final table: modify this to change what columns are included and in what order - CHANGE THIS
+columns = ['BBL','inspectiondate','apartment','class','novdescription','currentstatus',
+           'currentstatusdate','novissueddate','approveddate','originalcertifybydate',
+           'originalcorrectbydate','certifieddate','violationid']
+    
+# file that contains list of BBLS. MUST BE IN SAME FOLDER AS HPDComplaints.py
+rPath = "BBLs.csv"
+
+# MODIFY THIS - name of output file
+wPath = "HPD_violations_EWS.csv"
+
+
 
 def main():
 
     
     ### STATIC VARIABLES ###
     
-    # list of ENY zip codes
-    zips = [11207,11208,11212,11233]
-
-    # list of columns for final table: modify this to change what columns are included and in what order - CHANGE THIS
-    columns = ['BBL','inspectiondate','apartment','class','novdescription','currentstatus',
-            'currentstatusdate','novissueddate','approveddate','originalcertifybydate',
-            'originalcorrectbydate','certifieddate','violationid']
-    
-    # file that contains list of BBLS. MUST BE IN SAME FOLDER AS HPDComplaints.py
-    rPath = "BBLs.csv"
-
-    # MODIFY THIS - name of output file
-    wPath = "HPD_Violations.csv"
+   
 
     #############################################################################
 

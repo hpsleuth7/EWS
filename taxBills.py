@@ -9,8 +9,9 @@ from helpers import *
 import pdb
 
 # path for taxbills csv
-billpath="joined.csv"
+billpath="tax_bills_Krauss.csv"
 
+wPath = 'tax_bills_EWS.csv"
 def main():
 	
 	BBLs=readFile("BBLs.csv")
@@ -19,7 +20,7 @@ def main():
 	
 	bills=dropSort(bills,"ucbbl",BBLs)
 	
-	bills.to_csv("ENYtaxbills.csv",encoding='utf-8')
+	bills.to_csv(wPath,encoding='utf-8')
 	
 	return
 
