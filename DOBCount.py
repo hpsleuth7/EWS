@@ -39,8 +39,8 @@ dobecbURL = "https://data.cityofnewyork.us/resource/8vf4-ne9x.json"
 dobfileURL = "https://data.cityofnewyork.us/resource/rvhx-8trz.json"
 dobissueURL = "https://data.cityofnewyork.us/resource/83x8-shf7.json"
 
-binFile = "/Inputs/binmap.txt"
-streetsfile="/Inputs/streets.txt"
+binFile = "Inputs/binmap.txt"
+streetsfile="Inputs/streets.txt"
 
 # static reference:
 zips = [11207,11208,11212,11233]
