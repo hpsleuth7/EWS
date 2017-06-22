@@ -302,7 +302,6 @@ def getEcb():
     ecbFrame['BBL']=BBLs
 
     # fix date column and drop all before 2014
-    pdb.set_trace()
     ecbFrame['ISSUE_DATE']=parseDOBDates(ecbFrame['ISSUE_DATE'])
     startDate=datetime.date(2014,1,1)
     ecbFrame=ecbFrame.drop(ecbFrame[ecbFrame['ISSUE_DATE']<startDate].index)
