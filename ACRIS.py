@@ -45,6 +45,9 @@ wPath = "ACRIS_EWS.csv"
 
 def main():
 
+    printStart("ACRIS")
+    
+    """
     BBList=readFile(rPath)
     
     master=getMaster()
@@ -71,10 +74,10 @@ def main():
     
     legals=legals.set_index('new_index')
 
-
-    
-
     legals.to_csv(wPath)
+    """
+    
+    printEnd("ACRIS")
 
     return 0
 

@@ -55,6 +55,8 @@ def main():
     #############################################################################
 
 
+    printStart("HPD Complaints")
+    
     BBLs = readFile(rPath)  # read in the list of BBLs
 
 
@@ -76,6 +78,8 @@ def main():
     
     # export CSV
     master.to_csv(wPath)
+    
+    printEnd("HPD Complaints")
  
     return 0
 
@@ -142,7 +146,6 @@ def arrange(df, columns):
     for i in curr:                  # remove any dataFrame column not in list
         if i not in columns:
             df.pop(i)
-            print "Deleting: %s" % (i)
 
     df = df[columns]    # rearrange dataFrame columns
 

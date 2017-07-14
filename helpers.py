@@ -69,7 +69,6 @@ def parseDOBDates(dateSeries):
                 day=int(curr[3:5])
                 year=int(curr[6:10])
             except:
-                print curr
                 continue
         else:                         #try YYYYMMDD format
             try:
@@ -77,7 +76,6 @@ def parseDOBDates(dateSeries):
                 month=int(curr[4:6])
                 day=int(curr[6:8])
             except:                     #bad date value
-                print curr
                 month=1
                 day=1
                 year=1970
@@ -156,4 +154,17 @@ def JSONtoDataFrame(jstrings, jtype='records'):
     result = pd.concat(frames, ignore_index=True)
 
     return result
+    
+def printStart(name):
+
+    print "---- Fetching", name, "Data ----"
+    print "    ------        Please Wait         ------"
+    print ""
+    
+    return
+    
+def printEnd(name):
+
+    print "*******", name, " complete *******"
+    print ""
 

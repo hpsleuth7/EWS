@@ -56,7 +56,8 @@ DOB_ECB_file="raw_data/curled_data/DOB_ECB_opendata.csv"
 
 def main():
 
-
+    printStart("Department of Buildings")
+    
     BBLs = readFile(rPath)  # read in the list of BBLs
 
     frames = {}
@@ -67,9 +68,9 @@ def main():
     frames['file'] = getFile()
     frames['issue'] = getIssue()
 
-    # Create a dataframe of all -1s, with columns for final table
+    # Create a dataframe of all 'N', with columns for final table
     # may not need to add columns now - just start with one
-    temp = [0] * len(BBLs)
+    temp = ['N'] * len(BBLs)
     master = pandas.DataFrame({'diff':temp}, index=BBLs)
     
 
@@ -82,7 +83,8 @@ def main():
         hist.name=i
         master=master.join(hist)
 
-
+   
+    
     # calculate the diff column #
     s = frames['file']['BBL']
     master = master.fillna(value=0)  #NaN --> 0
@@ -93,25 +95,38 @@ def main():
 
     keys = s[s.isin(L)]   #get Series containing BBLS w/ filings, indexed by 
                           #file dataframe
+    
+    frames['file']=frames['file'].fillna(value=0)
+    
+    new=frames['file'].loc[keys.index]                  #testing
+    new.to_csv('ENY_jobs_filed.csv',encoding='utf-8')
+                          
+    
     for i in keys.index:               #calc unit difference in each file index
         row=frames['file'].loc[i]
+        
         eunits=row.loc['existing_dwelling_units']
         punits=row.loc['proposed_dwelling_units']
         try:
             eunits=float(eunits)
-            punits=float(punits)
         except ValueError:
             eunits=0
+        try:
+            punits=float(punits)
+        except ValueError:
             punits=0
-        diff=punits-eunits
-        master.loc[keys.loc[i],'diff']+=diff        #update field in master df
+        if punits!=eunits:
+            master.loc[keys.loc[i],'diff']='Y'        #update field in master df
+          
 
     
     master=master.fillna(value=0)
     master.to_csv(wPath,encoding='utf-8')
+    
+
  
 
-    # TO DO - figure out an error log #
+    printEnd("Department of Buildings")
 
     return 0
 
@@ -128,11 +143,11 @@ def getCom():
                                                                
     ### Error Check ###  
     except SSLError:       
-        print "Connection Error"
+        print "ERROR - DOBCount.py - Connection Error"
         return -1
 
     if response.status_code != 200:
-        print "Error querying API."
+        print "ERROR - DOBCount.py - bad response code"
     ################################
     
     resp.append(response.content)
@@ -159,7 +174,6 @@ def getCom():
     comFrame=comFrame.drop(comFrame[comFrame['date_entered']<startDate].index)
     
     comFrame=comFrame.drop(comFrame.index[toDelete])
-    #print comFrame['bin']
 
 
 
@@ -167,16 +181,18 @@ def getCom():
     binMap = getBin()  #binMap is Dataframe object
     toAdd = pandas.Series(-1,index=comFrame.index) #make series to hold BBLs
 
+    noBIN=0
     for i in comFrame.index:
         BIN=comFrame.loc[i,'bin']  # BIN is unicode type???
         BIN=np.int64(BIN)
         try:
             BBL=binMap.loc[BIN].iloc[0]
         except KeyError:
-            #print "WARNING: BIN not in records"
+            noBIN+=1
             BBL=-1
         toAdd[i]=BBL
 
+    print "WARNING - DOBCount.py -", noBIN, "BINs not in records"
     comFrame['BBL']=toAdd
 
     comFrame=comFrame.drop_duplicates('complaint_number')
@@ -202,12 +218,12 @@ def getViol():
             response = requests.get(dobvioURL,params=parameters)
                                                                
         ### Error Check ###  
-        except SSLError:       
-            print "Connection Error"
+        except:       
+            print "ERROR - DOBCount.py - Connection Error"
             return -1
 
         if response.status_code != 200:
-            print "Error querying API."
+            print "ERROR - DOBCount.py - Connection Error"
         ################################
 
         resp.append(response.content)
@@ -305,7 +321,6 @@ def getEcb():
     ecbFrame['ISSUE_DATE']=parseDOBDates(ecbFrame['ISSUE_DATE'])
     startDate=datetime.date(2014,1,1)
     ecbFrame=ecbFrame.drop(ecbFrame[ecbFrame['ISSUE_DATE']<startDate].index)
-    ecbFrame.to_csv("droppedECB.csv",encoding='utf-8')
 
     return ecbFrame
 
@@ -322,12 +337,11 @@ def getFile():
                                                                
     ### Error Check ###  
     except SSLError:       
-        print "Connection Error"
+        print "ERROR - DOBCount.py - Connection Error"
         return -1
 
     if response.status_code != 200:
-        print "Error querying API."
-        print response.content
+        print "ERROR - DOBCount.py - bad response code"
         return
     ################################
 
@@ -351,14 +365,13 @@ def getFile():
 
     fileFrame['BBL']=BBLs
 
-    fileFrame=fileFrame.drop_duplicates(subset='job__') #remove duplicate filings
+    #fileFrame=fileFrame.drop_duplicates(subset='job__') #remove duplicate filings
     
     # fix date column and drop all before 2014
     fileFrame['latest_action_date']=parseDOBDates(fileFrame['latest_action_date'])
     fileFrame=fileFrame.drop(fileFrame[fileFrame['latest_action_date']==-1].index)
     startDate=datetime.date(2014,1,1)
     fileFrame=fileFrame.drop(fileFrame[fileFrame['latest_action_date']<startDate].index)
-    fileFrame.to_csv("droppedFile.csv",encoding='utf-8')
 
     return fileFrame
 
@@ -375,12 +388,11 @@ def getIssue():
                                                                
     ### Error Check ###  
     except SSLError:       
-        print "Connection Error"
+        print "ERROR - DOBCount.py - Connection Error"
         return -1
 
     if response.status_code != 200:
-        print "Error querying API."
-        print response.content
+        print "ERROR - DOBCount.py - bad response code"
         return
     ################################
 
@@ -412,7 +424,6 @@ def getIssue():
     issueFrame=issueFrame.drop(issueFrame[issueFrame['issuance_date']==-1].index)
     startDate=datetime.date(2014,1,1)
     issueFrame=issueFrame.drop(issueFrame[issueFrame['issuance_date']<startDate].index)
-    issueFrame.to_csv('droppedIssue.csv',encoding='utf-8')
 
     return issueFrame
 
@@ -437,8 +448,7 @@ def JSONtoDataFrame(jstrings):
     for j in jstrings:
         frames.append(pandas.read_json(j,orient='records',dtype=False))
         if len(frames[-1].index)==10000 or len(frames[-1].index)==50000:
-            print "THROTTLE WARNING"
-
+            print "WARNING - DOBCount.py - Throttling"
     result = pandas.concat(frames, ignore_index=True)
 
     return result

@@ -24,6 +24,8 @@ coredata_file="raw_data/CoreData.csv"
 
 def main():
 
+    printStart("Furman Center")
+    
     master = getFurman()
     
     BBLs = readFile(bblpath)
@@ -31,12 +33,15 @@ def main():
     
     master.to_csv(coredata_file,encoding='utf-8')
     
+    printEnd("Furman Center")
+    
     return
     
 """
 Fetch and merge tables from Furman API
 Return dataframe object """
 def getFurman():
+
 
     resp = []
     

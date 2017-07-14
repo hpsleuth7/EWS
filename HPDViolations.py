@@ -49,13 +49,7 @@ wPath = "raw_data/HPD_violations_EWS.csv"
 
 def main():
 
-    
-    ### STATIC VARIABLES ###
-    
-   
-
-    #############################################################################
-
+    printStart("HPD Violations")
 
     BBLs = readFile(rPath)  # read in the list of BBLs
 
@@ -72,7 +66,9 @@ def main():
 
     # write to excel
     violations.to_csv(wPath,encoding='utf-8')
-
+    
+    printEnd("HPD Violations")
+    
     return 0
 
 
@@ -134,23 +130,6 @@ def getViolations(BBLs, zipCodes):
     complaints = complaints.drop(complaints.index[toDelete])
 
     return complaints
-
-
-
-
-""" Input: list of JSON strings from OpenData API. 
-    Output: pandas DataFrame caputuring all information """
-def JSONtoDataFrame(jstrings):
-
-    frames = []
-    for j in jstrings:
-        frames.append(pandas.read_json(j,orient='records'))
-        print len(frames[-1].index)
-    
-
-    result = pandas.concat(frames, ignore_index=True)
-
-    return result
 
 
 
