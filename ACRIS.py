@@ -28,7 +28,6 @@ import exceptions
 import pdb
 import numpy as np
 from helpers import *
-import dask.dataframe as dd
 
 # source URLs:
 rpmasterURL="https://data.cityofnewyork.us/resource/bnx9-e6tj.json"

@@ -106,7 +106,7 @@ def getViolations(BBLs, zipCodes):
                         params=parameters)
 
             ### Error Check ###  
-            except SSLError:       
+            except:       
                 print "Connection Error"
                 return -1
 
