@@ -32,7 +32,7 @@ from helpers import *
 # source URLs:
 rpmasterURL="https://data.cityofnewyork.us/resource/bnx9-e6tj.json"
 rppartiesURL="https://data.cityofnewyork.us/resource/636b-3b5g.json"
-rplegalsURL="https://data.cityofnewyork.us/resource/8h5j-fqxa.json"
+rplegalsURL="https://api.nycdb.info/real_property_legals?"
 
 streetsfile="streets.txt"
 
@@ -46,11 +46,12 @@ def main():
 
     printStart("ACRIS")
     
-    """
+    
     BBList=readFile(rPath)
     
-    master=getMaster()
+    master=getMaster(rPath)
     
+    """
     legals = getLegals()
     
     legals=pandas.DataFrame({'document_id':legals['document_id'],'BBL':legals['BBL']}) 
@@ -88,7 +89,7 @@ def main():
 """Retrieve all Real Property Legals entries from Brooklyn and matching ENY
     street names. Creates and populates a BBL column. Return in dataframe.
 """
-def getLegals():
+def getLegals(BBLs):
 
     
     
@@ -96,28 +97,43 @@ def getLegals():
     
     resp = []
     
-    streets=readStreets()
-    resp=[]
-
-    for i in streets:  #currently fetching by street name - is this reliable??
-
-        parameters = {'street_name':i,'borough':3,'$limit':50000}
-
-
-
+    block=len(BBLs)/50       #figure out how to do this
+    
+    for i in range(block-1):
+        list = ",".join(BBLs[i*50:(i+1)*50])   
         try:
-            response = requests.get(rplegalsURL,params=parameters)
-                                                               
+            response=requests.get(rplegalsURL+"bbl=in."+list)       
         ### Error Check ###  
         except:     
             print "Connection Error"
             return -1
-
         if response.status_code != 200:
             print "Error querying API."
             return -1
 
         resp.append(response.content)
+        
+    if len(BBLs)%50 != 0:
+        list=",".join(BBLs[-len(BBLs)%50:])
+        try:
+            response=requests.get(rplegalsURL+"bbl=in."+list)       
+        ### Error Check ###  
+        except:     
+            print "Connection Error"
+            return -1
+        if response.status_code != 200:
+            print "Error querying API."
+            return -1
+        
+        resp.append(response.content)
+
+    legalFrame = JSONtoDataFrame(resp)
+
+
+
+
+       
+        
     
     ################################
     
