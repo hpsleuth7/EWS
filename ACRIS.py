@@ -30,17 +30,22 @@ import numpy as np
 from helpers import *
 
 # source URLs:
-rpmasterURL="https://data.cityofnewyork.us/resource/bnx9-e6tj.json"
+rpmasterURL="https://api.nycdb.info/real_property_master?"
 rppartiesURL="https://data.cityofnewyork.us/resource/636b-3b5g.json"
 rplegalsURL="https://api.nycdb.info/real_property_legals?"
 
 streetsfile="streets.txt"
 
-rPath = "BBLs.csv"
+rPath = "Inputs/BBLs.csv"
 ACRISfile="ACRIS_-_Real_Property_Master.csv"
 
 # Name of output file
-wPath = "ACRIS_EWS.csv"
+wPath = "raw_data/ACRIS_EWS.csv"
+
+# doctype codes from real_property_master that indicate deed conveyance
+#  HOW TO DEAL WITH COMMAS IN FIELD
+types = 'DEED,DEEDO,"DEED, LE","DEED, TS","DEED, RC",ASTU,CNTR,MCON,LTPA,CONDEED,DEEDP,ACON,TORREN,IDED,TLS,MTGE'
+
 
 def main():
 
@@ -48,8 +53,24 @@ def main():
     
     
     BBList=readFile(rPath)
+    legals = getLegals(BBList)
     
-    master=getMaster(rPath)
+    legals=legals[['documentid','bbl']] #keep only needed columns
+    docids = legals['documentid'].tolist()
+    master=getMaster(docids)
+    master=master.merge(legals, on='documentid',how='inner')
+    lucyIndex = pandas.DataFrame({'bbl':BBList,'new_index':range(len(BBList))}) # make dataframe of just ordered index, bbl from lucy's list
+     
+    final=lucyIndex.merge(master,on='bbl',how='right') #make sure this preserves lucy's index
+    final=final.sort_values(['new_index','docdate'],ascending=[True,False])
+    final=final.set_index('new_index')
+    
+    final.to_csv(wPath)
+    
+    
+    
+    
+    
     
     """
     legals = getLegals()
@@ -99,7 +120,7 @@ def getLegals(BBLs):
     
     block=len(BBLs)/50       #figure out how to do this
     
-    for i in range(block-1):
+    for i in range(block):
         list = ",".join(BBLs[i*50:(i+1)*50])   
         try:
             response=requests.get(rplegalsURL+"bbl=in."+list)       
@@ -113,8 +134,9 @@ def getLegals(BBLs):
 
         resp.append(response.content)
         
+        
     if len(BBLs)%50 != 0:
-        list=",".join(BBLs[-len(BBLs)%50:])
+        list=",".join(BBLs[-(len(BBLs)%50):])
         try:
             response=requests.get(rplegalsURL+"bbl=in."+list)       
         ### Error Check ###  
@@ -129,50 +151,55 @@ def getLegals(BBLs):
 
     legalFrame = JSONtoDataFrame(resp)
 
-
-
-
-       
-        
-    
-    ################################
-    
-
-    legalFrame = JSONtoDataFrame(resp)
-
-    # make a BBL column in legalFrame
-    BBLs=pandas.Series(-1,index=legalFrame.index)
-
-    for i in legalFrame.index:
-        temp=legalFrame.iloc[i]
-        
-        BBL = str(temp['borough'])
-        curr=str(temp['block'])
-        buff='0'*(5-len(curr))
-        BBL = BBL+buff+curr
-        curr=str(temp['lot'])[-4:]
-        buff='0'*(4-len(curr))
-        BBL=BBL+buff+curr
-
-        try:
-            BBL=int(BBL)  # BBLs are INT type
-        except:           # catch errors?
-            pass
-        BBLs[i]=BBL
-
-    legalFrame['BBL']=BBLs
-    
     return legalFrame
-
 
 """Retrieves all entries from Real Property Master from Brooklyn and recorded
     in the last 6 months. Returns in dataframe.
 """
-def getMaster():
+def getMaster(docids):
 
-    master = pandas.read_csv(ACRISfile, encoding='utf-8')
     
-    return master
+    # do the block requests with list joins - should be nearly 1-1; 
+    # restricted by doctype
+    
+    resp = []
+    
+    block=len(docids)/100       #figure out how to do this
+    
+    for i in range(block):
+        list = ",".join(docids[i*100:(i+1)*100])   
+        try:
+            response=requests.get(rpmasterURL+"documentid=in."+list+"&"+\
+            "doctype=in."+types)       
+        ### Error Check ###  
+        except:     
+            print "Connection Error"
+            return -1
+        if response.status_code != 200:
+            print "Error querying API."
+            return -1
+
+        resp.append(response.content)
+        
+    if len(docids)%100 != 0:
+        list=",".join(docids[-(len(docids)%100):])
+        try:
+            response=requests.get(rpmasterURL+"documentid=in."+list+"&"+
+                "doctype=in."+types)       
+        ### Error Check ###  
+        except:     
+            print "Connection Error"
+            return -1
+        if response.status_code != 200:
+            print "Error querying API."
+            return -1
+        
+        resp.append(response.content)
+
+    masterFrame = JSONtoDataFrame(resp)
+    masterFrame.to_csv('RPMaster.csv',encoding='utf-8')
+    
+    return masterFrame
     
     
     """
