@@ -255,7 +255,7 @@ def getViol():
     
     violFrame['BBL']=BBLs
     
-    # fix date column and drop all before 2014
+    # fix  column and drop all before 2014
     violFrame['issue_date']=parseDOBDates(violFrame['issue_date'])
     violFrame=violFrame.drop(violFrame[violFrame['issue_date']==-1].index)
     startDate=datetime.date(2014,1,1)

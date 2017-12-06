@@ -88,11 +88,12 @@ def parseDOBDates(dateSeries):
    Output: series of pyDates, with missing/non-parseable entries -1"""
 def parseSODADates(sodaDates):
     pyDates = pd.Series(-1,index=sodaDates.index)
+    noDate=0
 
     for i in range(len(sodaDates.index)):
         sDate=sodaDates.iloc[i]
         if not isinstance(sDate,unicode):         # check for NaNs
-            print "ERROR in dateFixer: missing date"
+            noDate+=1
             continue
         if len(sDate)!= 23:                   # check correct SODA date format
             print "ERROR in dateFixer: corrupted date"
@@ -101,7 +102,9 @@ def parseSODADates(sodaDates):
         month = int(sDate[5:7])
         day = int(sDate[8:10])
         pyDates.iloc[i]=datetime.date(year,month,day)
-
+        
+    if noDate>0:
+    	print "WARNING in dateFixer:",noDate,"dates missing."
     return pyDates
     
 """Input: frame = dataframe with column 'BBL'. 
