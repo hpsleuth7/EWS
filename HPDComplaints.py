@@ -123,8 +123,7 @@ def getComplaints(BBList, zipCodes):
     complaints['Address']=address  # add address column to dataframe
 
     complaints['BBL']=BBLs
-    
-    
+ 
     complaints=dropSort(complaints,'BBL',BBList)
     return complaints
     
