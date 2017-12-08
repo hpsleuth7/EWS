@@ -41,7 +41,6 @@ def main():
     regFrame=regFrame[['bbl','registrationid']]
     regids = regFrame['registrationid']
     conFrame=getContacts(regids)
-    pdb.set_trace()
     master=pandas.merge(regFrame,conFrame,on='registrationid',how='inner')
     master=dropSort(master,'bbl',BBList)
     master=master[cols]
