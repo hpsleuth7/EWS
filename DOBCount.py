@@ -328,24 +328,25 @@ def getEcb():
 BBL for each entry. Return dataframe."""
 def getFile():
     resp=[]
+    
+    for i in zips:
+    
+        parameters = {'community___board':comboard,'$limit':50000,'zip':i}
 
-    parameters = {'community___board':comboard,'$limit':50000}
-
-    try:   # SELECT COMMAND NOT WORKING
-        response = requests.get(dobfileURL,params=parameters,data=
-                "$select=job__, borough, block, lot, existing_dwelling_units, proposed_dwelling_units")
+        try:   # SELECT COMMAND NOT WORKING
+            response = requests.get(dobfileURL,params=parameters)
                                                                
-    ### Error Check ###  
-    except SSLError:       
-        print "ERROR - DOBCount.py - Connection Error"
-        return -1
+         ### Error Check ###  
+        except SSLError:       
+            print "ERROR - DOBCount.py - Connection Error"
+            return -1
 
-    if response.status_code != 200:
-        print "ERROR - DOBCount.py - bad response code"
-        return
-    ################################
+        if response.status_code != 200:
+            print "ERROR - DOBCount.py - bad response code"
+            return
+        ################################
 
-    resp.append(response.content)
+        resp.append(response.content)
 
     fileFrame = JSONtoDataFrame(resp)
     BBLs=pandas.Series(-1,index=fileFrame.index)
@@ -420,10 +421,10 @@ def getIssue():
     issueFrame['BBL']=BBLs
     
     # fix date column and drop all before 2014
-    issueFrame['issuance_date']=parseSODADates(issueFrame['issuance_date'])
-    issueFrame=issueFrame.drop(issueFrame[issueFrame['issuance_date']==-1].index)
+    issueFrame['filing_date']=parseSODADates(issueFrame['filing_date'])
+    issueFrame=issueFrame.drop(issueFrame[issueFrame['filing_date']==-1].index)
     startDate=datetime.date(2014,1,1)
-    issueFrame=issueFrame.drop(issueFrame[issueFrame['issuance_date']<startDate].index)
+    issueFrame=issueFrame.drop(issueFrame[issueFrame['filing_date']<startDate].index)
 
     return issueFrame
 
@@ -449,6 +450,7 @@ def JSONtoDataFrame(jstrings):
         frames.append(pandas.read_json(j,orient='records',dtype=False))
         if len(frames[-1].index)==10000 or len(frames[-1].index)==50000:
             print "WARNING - DOBCount.py - Throttling"
+            print frames[-1]
     result = pandas.concat(frames, ignore_index=True)
 
     return result

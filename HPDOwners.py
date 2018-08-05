@@ -24,7 +24,7 @@ rPath = "Inputs/BBLs.csv"
 wPath = "raw_data/HPD_Owners_EWS.csv"
 
 #columns for final dataframe
-cols=['registrationcontacttype','corporationname','lastname','firstname','businesshousenumber',
+cols=['type','corporationname','lastname','firstname','businesshousenumber',
     'businessstreetname','businessapartment','businesscity','businessstate','businesszip']
 
 
@@ -38,6 +38,7 @@ def main():
 
     # check if BBL <--> registrationid is one-to-one -- looks like it is!
     
+    pdb.set_trace()
     regFrame=regFrame[['bbl','registrationid']]
     regids = regFrame['registrationid']
     conFrame=getContacts(regids)

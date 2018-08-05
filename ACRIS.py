@@ -118,15 +118,15 @@ def getLegals(BBLs):
     
     resp = []
     
-    block=len(BBLs)/50       #figure out how to do this
-    
+    block=len(BBLs)/50       
+
     for i in range(block):
         list = ",".join(BBLs[i*50:(i+1)*50])   
         try:
             response=requests.get(rplegalsURL+"bbl=in."+list)       
         ### Error Check ###  
         except:     
-            print "Connection Error"
+            print "Connection Error in Legals"
             return -1
         if response.status_code != 200:
             print "Error querying API."
@@ -166,6 +166,7 @@ def getMaster(docids):
     
     block=len(docids)/100       #figure out how to do this
     
+    
     for i in range(block):
         list = ",".join(docids[i*100:(i+1)*100])   
         try:
@@ -173,7 +174,7 @@ def getMaster(docids):
             "doctype=in."+types)       
         ### Error Check ###  
         except:     
-            print "Connection Error"
+            print "Connection Error in Master"
             return -1
         if response.status_code != 200:
             print "Error querying API."
@@ -282,7 +283,7 @@ def getParties(ids):
                                                                
         ### Error Check ###  
         except:     
-            print "Connection Error"
+            print "Connection Error in Parties"
             return -1
 
         if response.status_code != 200:
