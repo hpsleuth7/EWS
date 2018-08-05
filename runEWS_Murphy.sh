@@ -18,4 +18,4 @@ python /Users/Murphy/Desktop/ENV/EWS/Scripts/HPDComplaints.py
 
 python /Users/Murphy/Desktop/ENV/EWS/Scripts/HPDViolations.py
 
-
+python /Users/Murphy/Desktop/ENV/EWS/Scripts/HPDOwners.py

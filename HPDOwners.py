@@ -38,7 +38,6 @@ def main():
 
     # check if BBL <--> registrationid is one-to-one -- looks like it is!
     
-    pdb.set_trace()
     regFrame=regFrame[['bbl','registrationid']]
     regids = regFrame['registrationid']
     conFrame=getContacts(regids)
